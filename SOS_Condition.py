@@ -1,6 +1,6 @@
 import math
+from Telebot_Alert import send_telegram_alert
 def is_female_surrounded(female_bbox, mbbox, threshold_distance=50):
-    #print("inside the main box")
     surrounding_men_count = 0
 
     for male_bbox in mbbox:
@@ -13,13 +13,26 @@ def is_female_surrounded(female_bbox, mbbox, threshold_distance=50):
 
         distance = math.sqrt((male_center_x - female_center_x) ** 2 + (male_center_y - female_center_y) ** 2)
 
+        # Debug print to check the distances
+        print(f"Male bbox: {male_bbox}, Female bbox: {female_bbox}, Distance: {distance}")
+
         # Check if the male is within the threshold distance
         if distance < threshold_distance:
             surrounding_men_count += 1
 
-        # If we already have three surrounding men, return True
-        if surrounding_men_count >= 3:
+        # If we already have two surrounding men, return True
+        if surrounding_men_count >= 2:
             return True
 
-    # Return False if fewer than three men are within the threshold distance
+    # Return False if fewer than two men are within the threshold distance
     return False
+def process_frame(frame, female_bboxes, male_bboxes, threshold_distance=50):
+    for female_bbox in female_bboxes:
+        # Check if the current female is surrounded
+        if is_female_surrounded(female_bbox, male_bboxes, threshold_distance):
+            send_telegram_alert(frame, "female_surrounded")
+            print("Alert sent: Female surrounded by men.")
+            # Trigger the alert
+
+# Dummy implementation of the alert function
+

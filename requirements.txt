@@ -1,0 +1,11 @@
+tensorflow
+pyTelegramBotAPI
+mediapipe
+torch torchvision torchaudio  # Install PyTorch
+numpy opencv-python  # Install dependencies for image processing
+matplotlib  # For visualizations
+seaborn  # Optional for advanced visualizations
+requests
+twilio
+secure-smtplib
+scipy

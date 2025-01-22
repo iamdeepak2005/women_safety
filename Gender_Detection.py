@@ -43,19 +43,29 @@ def detect_genders_in_frame(frame, person_boxes):
 
     for i, box in enumerate(person_boxes):
         x1, y1, x2, y2 = map(int, box)  # Ensure bounding box values are integers
+        
+        # Validate bounding box
+        if x1 < 0 or y1 < 0 or x2 > frame.shape[1] or y2 > frame.shape[0]:
+            print(f"Skipping invalid bounding box {i}: {box}")
+            continue
+        
+        # Extract the person's region
         person_image = frame[y1:y2, x1:x2]
 
         # Check if the person region is sufficiently large to perform detection
-        if person_image.size > 0:
+        if person_image.size > 0 and person_image.shape[0] > 10 and person_image.shape[1] > 10:
             label, confidence = classify_gender(person_image)
-            if label and confidence >= 0.5:  # Use a confidence threshold
-                if "male" in label.lower():
+            print(f"Predicted for person {i}: {label} with confidence {confidence}")
+            
+            # Update counts based on predicted label
+            if label:  # Only consider results above a confidence threshold
+                if "male" == label.lower():
                     male_count += 1
-                elif "female" in label.lower():
+                elif "female" == label.lower():
                     female_count += 1
             else:
                 print(f"Low confidence for detected person {i}, skipping...")
         else:
-            print(f"Invalid person bounding box {i}, skipping...")
+            print(f"Invalid or too small region for bounding box {i}, skipping...")
 
     return {"males": male_count, "females": female_count}
